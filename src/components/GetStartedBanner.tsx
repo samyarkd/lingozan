@@ -1,10 +1,11 @@
+import { Heading } from "./ui/Typography";
 import { Card, CardContent, CardHeader } from "./ui/card";
 
 const GetStartedBanner = () => {
   return (
     <Card className="w-full my-auto bg-white/10 backdrop-blur text-center max-w-lg">
       <CardHeader>
-        <h1 className="text-2xl font-semibold">Welcome</h1>
+        <Heading>Welcome</Heading>
       </CardHeader>
       <CardContent className="space-y-4 md:text-lg">
         <p>
