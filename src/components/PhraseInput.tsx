@@ -5,7 +5,7 @@ export function PhraseInput() {
   return (
     <div className="grid w-full gap-2 md:mb-6">
       <Textarea
-        className="backdrop-blur-sm xs:text-lg md:text-3xl bg-white/30"
+        className="backdrop-blur-sm xs:text-lg md:text-3xl bg-white/50"
         maxLength={300}
         placeholder="Type your message here."
       />
