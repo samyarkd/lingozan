@@ -3,14 +3,14 @@ import { Textarea } from "~/components/ui/textarea";
 
 export function PhraseInput() {
   return (
-    <div className="grid w-full gap-2 md:mb-6">
+    <div className="grid w-full gap-2 lg:mb-6">
       <Textarea
-        className="backdrop-blur-sm xs:text-lg md:text-3xl bg-white/50"
+        className="backdrop-blur-sm xs:text-lg lg:text-2xl md:text-xl bg-white/50"
         maxLength={300}
         placeholder="Type your message here."
       />
-      <Button className="md:text-3xl sm:text-lg md:py-10" size="lg">
-        Send Message
+      <Button className="lg:text-2xl md:text-xl sm:text-lg md:py-6" size="lg">
+        Generate Tutorial
       </Button>
     </div>
   );
