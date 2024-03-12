@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from "./ui/card";
 
 const GetStartedBanner = () => {
   return (
-    <Card className="w-full my-auto bg-white/10 backdrop-blur text-center max-w-lg">
+    <Card className="shadow-md w-full my-auto bg-white/10 backdrop-blur text-center max-w-lg">
       <CardHeader>
         <Heading>Welcome</Heading>
       </CardHeader>
