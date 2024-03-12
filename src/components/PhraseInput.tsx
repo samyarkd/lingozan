@@ -18,7 +18,7 @@ export function PhraseInput() {
   useEffect(() => {
     async function runAnimations() {
       while (true) {
-        for await (const phrase of phrases) {
+        for (const phrase of phrases) {
           await animate(0, phrase.length, {
             onUpdate: (latest) => {
               setPlaceholder(phrase.slice(0, latest));
