@@ -26,7 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          "font-sans bg-gradient-to-b from-gray-200 to-gray-400 bg-no-repeat min-h-screen",
+          "font-sans bg-gradient-to-b from-gray-300 to-gray-500 bg-no-repeat min-h-screen",
           inter.variable,
         )}
       >
