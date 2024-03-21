@@ -132,7 +132,7 @@ const TutorialPage = ({ params }: { params: { tutId: string } }) => {
                   className="relative"
                 >
                   <Badge
-                    variant={step.isCorrect ? "success" : "destructive"}
+                    variant={step.isCorrect ? "default" : "destructive"}
                     className="w-5 h-10"
                   />
                 </motion.div>
@@ -174,7 +174,7 @@ const TutorialPage = ({ params }: { params: { tutId: string } }) => {
                           currentAnswer
                             ? currentAnswer === an
                               ? currentAnswer === step.correctAnswer
-                                ? "success"
+                                ? "default"
                                 : "destructive"
                               : "secondary"
                             : "secondary"

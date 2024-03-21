@@ -1,10 +1,12 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { unstable_noStore as noStore } from "next/cache";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 import { useStep } from "usehooks-ts";
+import MoreInfoDrawer from "~/components/tut/moreInfo";
 import { Heading } from "~/components/ui/Typography";
+import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { cn } from "~/lib/utils";
@@ -73,36 +75,44 @@ const tutorialSteps = [
 
 const TutorialPage = ({ params }: { params: { tutId: string } }) => {
   noStore();
-  const ref = useRef<HTMLDivElement>(null);
-  const [cardHeight, setcardHeight] = useState(0);
   const [currentStep, helpers] = useStep(tutorialSteps.length);
 
   const { canGoToPrevStep, canGoToNextStep, goToNextStep, goToPrevStep } =
     helpers;
 
-  useEffect(() => {
-    setcardHeight(ref.current?.clientHeight as number);
-  }, [ref.current?.clientHeight]);
-
   return (
     <div className="grid p-4 sm:p-0 gap-6 justify-center items-center content-center justify-items-center min-h-screen">
-      <Card className="sm:w-96 max-w-5xl self-start mb-auto justify-self-start backdrop-blur text-center">
-        <CardContent className="p-2">
-          <Heading>Step By Step Tutorial</Heading>
-        </CardContent>
-      </Card>
+      <div className="relative">
+        <Card className="w-full sm:min-w-96 text-center">
+          <CardContent className="p-2">
+            <Heading>Step By Step Tutorial</Heading>
+          </CardContent>
+        </Card>
+        <div className="grid w-full gap-2 grid-cols-10 absolute -top-1/3 left-0 px-2 justify-items-center">
+          <AnimatePresence>
+            {new Array(currentStep + (canGoToNextStep ? -1 : 0))
+              .fill(true)
+              .map((_, idx) => {
+                return (
+                  <motion.div
+                    key={`step ${idx}`}
+                    initial={{ top: 0, opacity: 0.5 }}
+                    animate={{ top: "-10%", opacity: 1 }}
+                    exit={{ top: 0, opacity: 0 }}
+                    className="relative -z-10"
+                  >
+                    <Badge variant="default" className="w-5 h-10" />
+                  </motion.div>
+                );
+              })}
+          </AnimatePresence>
+        </div>
+      </div>
       <div className="relative w-full">
-        <Card ref={ref} className="w-full backdrop-blur text-center">
+        <Card className="w-full backdrop-blur text-center">
           <CardContent className="p-3 min-h-52 sm:p-6 gap-4 text-start whitespace-pre-line flex flex-col justify-between">
             <p>{tutorialSteps[currentStep - 1]?.content}</p>
-
-            <Button
-              className="mx-auto w-full -mb-2 mt-auto"
-              size="sm"
-              variant="link"
-            >
-              More Explanation
-            </Button>
+            <MoreInfoDrawer />
           </CardContent>
         </Card>
       </div>
