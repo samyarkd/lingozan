@@ -86,16 +86,13 @@ const TutorialPage = ({ params }: { params: { tutId: string } }) => {
 
   return (
     <div className="grid p-4 sm:p-0 gap-6 justify-center items-center content-center justify-items-center min-h-screen">
-      <Card className="sm:w-96 max-w-4xl self-start mb-auto justify-self-start shadow-md backdrop-blur bg-white/35 text-center">
+      <Card className="sm:w-96 max-w-5xl self-start mb-auto justify-self-start backdrop-blur text-center">
         <CardContent className="p-2">
           <Heading>Step By Step Tutorial</Heading>
         </CardContent>
       </Card>
       <div className="relative w-full">
-        <Card
-          ref={ref}
-          className="w-full backdrop-blur bg-white/35 text-center"
-        >
+        <Card ref={ref} className="w-full backdrop-blur text-center">
           <CardContent className="p-3 min-h-52 sm:p-6 gap-4 text-start whitespace-pre-line flex flex-col justify-between">
             <p>{tutorialSteps[currentStep - 1]?.content}</p>
 

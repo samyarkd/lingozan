@@ -25,16 +25,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={cn(
-          "font-sans bg-gradient-to-b from-gray-300 to-gray-500 bg-no-repeat min-h-screen",
-          inter.variable,
-        )}
+        className={cn("font-sans bg-background min-h-screen", inter.variable)}
       >
-        <TRPCReactProvider>
-          <ThemeProvider attribute="class" defaultTheme="light">
-            {children}
-          </ThemeProvider>
-        </TRPCReactProvider>
+        <ThemeProvider attribute="class" defaultTheme="light">
+          <TRPCReactProvider>{children}</TRPCReactProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
