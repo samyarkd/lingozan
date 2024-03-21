@@ -1,6 +1,9 @@
 "use client";
+
+import { unstable_noStore as noStore } from "next/cache";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useStep } from "usehooks-ts";
 import { Heading } from "~/components/ui/Typography";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
@@ -69,79 +72,69 @@ const tutorialSteps = [
 ];
 
 const TutorialPage = ({ params }: { params: { tutId: string } }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
+  noStore();
+  const ref = useRef<HTMLDivElement>(null);
+  const [cardHeight, setcardHeight] = useState(0);
+  const [currentStep, helpers] = useStep(tutorialSteps.length);
 
-  function changeActiveIndex(next: -1 | 1) {
-    if (activeIndex === 0) {
-      setActiveIndex(activeIndex + 1);
-      return;
-    }
+  const { canGoToPrevStep, canGoToNextStep, goToNextStep, goToPrevStep } =
+    helpers;
 
-    if (activeIndex === tutorialSteps.length - 1) {
-      setActiveIndex(activeIndex - 1);
-      return;
-    }
-
-    setActiveIndex(activeIndex + next);
-  }
+  useEffect(() => {
+    setcardHeight(ref.current?.clientHeight as number);
+  }, [ref.current?.clientHeight]);
 
   return (
-    <div className="grid gap-6 justify-center items-center content-center justify-items-center min-h-screen">
-      <Card className="w-96 max-w-2xl shadow-md backdrop-blur bg-white/35 text-center">
+    <div className="grid p-4 sm:p-0 gap-6 justify-center items-center content-center justify-items-center min-h-screen">
+      <Card className="sm:w-96 max-w-4xl self-start mb-auto justify-self-start shadow-md backdrop-blur bg-white/35 text-center">
         <CardContent className="p-2">
           <Heading>Step By Step Tutorial</Heading>
         </CardContent>
       </Card>
-      <div className="relative h-52 w-full">
-        {tutorialSteps.map((step, idx) => {
-          return (
-            <Card
-              key={idx}
-              style={{
-                right: activeIndex === idx ? 0 : idx * -5,
-                bottom: activeIndex === idx ? 0 : idx * -1,
-                transform: activeIndex === idx ? "" : `rotate(${idx * 1}deg)`,
-                zIndex: -idx + (activeIndex === idx ? 100 : 0),
-              }}
-              className="w-full absolute min-h-56 backdrop-blur bg-white/35 text-center"
+      <div className="relative w-full">
+        <Card
+          ref={ref}
+          className="w-full backdrop-blur bg-white/35 text-center"
+        >
+          <CardContent className="p-3 min-h-52 sm:p-6 gap-4 text-start whitespace-pre-line flex flex-col justify-between">
+            <p>{tutorialSteps[currentStep - 1]?.content}</p>
+
+            <Button
+              className="mx-auto w-full -mb-2 mt-auto"
+              size="sm"
+              variant="link"
             >
-              <CardContent className="pt-6 text-start whitespace-pre-line">
-                {step.content}
-              </CardContent>
-            </Card>
-          );
-        })}
+              More Explanation
+            </Button>
+          </CardContent>
+        </Card>
       </div>
-      <div className="grid grid-cols-4 w-full gap-x-4 gap-y-2">
+      <div className="grid grid-cols-1 sm:grid-cols-4 w-full gap-x-4 gap-y-2">
         <Button
-          disabled={activeIndex === 0}
+          disabled={!canGoToPrevStep}
           onClick={() => {
-            changeActiveIndex(-1);
+            goToPrevStep();
           }}
-          className={cn("col-span-1 shadow-md disabled:cursor-not-allowed")}
+          className={cn("sm:col-span-1 shadow-md disabled:cursor-not-allowed")}
           variant="secondary"
         >
           Back
         </Button>
         <Button
-          disabled={activeIndex === tutorialSteps.length - 1}
+          disabled={!canGoToNextStep}
           onClick={() => {
-            changeActiveIndex(1);
+            goToNextStep();
           }}
-          className="col-span-3 shadow-md disabled:cursor-not-allowed"
+          className="sm:col-span-3 shadow-md disabled:cursor-not-allowed"
         >
           Next
         </Button>
-        <Link className="col-span-4" href={`/tut/${params.tutId}/quiz`}>
+        <Link className="sm:col-span-4" href={`/tut/${params.tutId}/quiz`}>
           <Button
-            variant={
-              activeIndex === tutorialSteps.length - 1 ? "default" : "link"
-            }
+            variant={!canGoToNextStep ? "default" : "link"}
             className="w-full"
           >
-            {activeIndex === tutorialSteps.length - 1
-              ? "Take a Quiz"
-              : "Skip To take a Quiz"}
+            {canGoToNextStep ? "Skip to Take the Quiz" : "Take the Quiz"}
           </Button>
         </Link>
       </div>
