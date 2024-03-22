@@ -1,5 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { useState } from "react";
 import { Heading } from "~/components/ui/Typography";
 import { Badge } from "~/components/ui/badge";
@@ -121,14 +122,7 @@ const TutorialPage = ({ params }: { params: { tutId: string } }) => {
           setAnswerList={setAnswerList}
         />
       )}
-      {answerList.length === quizQuestions.length && (
-        <div className="flex flex-col gap-2">
-          <Card className="w-full shadow-md">
-            <CardHeader>Well-done 🎉 now let's review your answers</CardHeader>
-          </Card>
-          <Button className="shadow-md">Review Answers</Button>
-        </div>
-      )}
+      {answerList.length === quizQuestions.length && <FinishCard />}
       {/* TODO: we need a check button and a skkip button just like how doulingo does it */}
       <div />
     </div>
@@ -217,6 +211,19 @@ const QuestionStep = ({
         })}
       </CardContent>
     </Card>
+  );
+};
+
+const FinishCard = () => {
+  return (
+    <div className="flex flex-col gap-2">
+      <Card className="w-full shadow-md">
+        <CardHeader>Well-done 🎉 now let's review your answers</CardHeader>
+      </Card>
+      <Link href="review">
+        <Button className="shadow-md w-full">Review Answers</Button>
+      </Link>
+    </div>
   );
 };
 
