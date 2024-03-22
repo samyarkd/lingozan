@@ -18,7 +18,7 @@ import {
 } from "../ui/drawer";
 
 const MoreInfoDrawer = () => {
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isDesktop = useMediaQuery("(min-width: 640px)");
 
   if (isDesktop) {
     return (
@@ -39,7 +39,7 @@ const MoreInfoDrawer = () => {
 
   return (
     <Drawer>
-      <DrawerTrigger className="text-primary underline mx-auto w-full -mb-2 mt-auto">
+      <DrawerTrigger className="text-primary underline mx-auto w-full mt-auto">
         More Explanation
       </DrawerTrigger>
       <DrawerContent>

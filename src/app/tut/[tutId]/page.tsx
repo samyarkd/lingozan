@@ -81,8 +81,8 @@ const TutorialPage = ({ params }: { params: { tutId: string } }) => {
     helpers;
 
   return (
-    <div className="grid p-4 sm:p-0 gap-6 justify-center items-center content-center justify-items-center min-h-screen">
-      <div className="relative">
+    <div className="grid p-4 sm:p-0 gap-6 sm:justify-center content-between sm:content-around min-h-screen">
+      <div className="relative sm:mt-0 mt-5">
         <Card className="w-full sm:min-w-96 text-center">
           <CardContent className="p-2">
             <Heading>Step By Step Tutorial</Heading>
@@ -111,7 +111,9 @@ const TutorialPage = ({ params }: { params: { tutId: string } }) => {
       <div className="relative w-full">
         <Card className="w-full backdrop-blur text-center">
           <CardContent className="p-3 min-h-52 sm:p-6 gap-4 text-start whitespace-pre-line flex flex-col justify-between">
-            <p>{tutorialSteps[currentStep - 1]?.content}</p>
+            <p className="text-sm sm:text-base">
+              {tutorialSteps[currentStep - 1]?.content}
+            </p>
             <MoreInfoDrawer />
           </CardContent>
         </Card>
