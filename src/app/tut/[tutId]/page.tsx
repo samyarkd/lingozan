@@ -109,7 +109,7 @@ const TutorialPage = ({ params }: { params: { tutId: string } }) => {
         </div>
       </div>
       <div className="relative w-full">
-        <Card className="w-full backdrop-blur text-center">
+        <Card className="w-full text-center">
           <CardContent className="p-3 min-h-52 sm:p-6 gap-4 text-start whitespace-pre-line flex flex-col justify-between">
             <p className="text-sm sm:text-base">
               {tutorialSteps[currentStep - 1]?.content}

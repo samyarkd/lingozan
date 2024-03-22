@@ -80,12 +80,73 @@ const quizQuestions = [
 ];
 
 const TutorialPage = ({ params }: { params: { tutId: string } }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
   const [answerList, setAnswerList] = useState<
     { answer: string | null; question: string; isCorrect: boolean | null }[]
   >([]);
+
+  return (
+    <div className="grid gap-14 content-between sm:content-around p-4 sm:p-0 sm:justify-center min-h-screen">
+      <div className="relative w-full sm:mt-0 mt-5">
+        <Card className="w-full sm:min-w-96 text-center">
+          <CardContent className="p-2">
+            <Heading>Step By Step Tutorial</Heading>
+          </CardContent>
+        </Card>
+        <div className="grid w-full -z-10 gap-2 grid-cols-10 absolute -top-1/3 left-0 px-2 justify-items-center">
+          {answerList
+            .filter((q) => q?.isCorrect !== null)
+            .map((step) => {
+              return (
+                <motion.div
+                  key={step.question}
+                  initial={{ top: 0, opacity: 0.5 }}
+                  animate={{ top: "-10%", opacity: 1 }}
+                  className="relative"
+                >
+                  <Badge
+                    variant={step.isCorrect ? "default" : "destructive"}
+                    className="w-5 h-10"
+                  />
+                </motion.div>
+              );
+            })}
+        </div>
+      </div>
+      {answerList.length !== quizQuestions.length && quizQuestions.length && (
+        <QuestionStep
+          currentQuestion={
+            quizQuestions[answerList.length] as (typeof quizQuestions)[0]
+          }
+          answerList={answerList}
+          setAnswerList={setAnswerList}
+        />
+      )}
+      {answerList.length === quizQuestions.length && (
+        <div className="flex flex-col gap-2">
+          <Card className="w-full shadow-md">
+            <CardHeader>Well-done 🎉 now let's review your answers</CardHeader>
+          </Card>
+          <Button className="shadow-md">Review Answers</Button>
+        </div>
+      )}
+      {/* TODO: we need a check button and a skkip button just like how doulingo does it */}
+      <div />
+    </div>
+  );
+};
+
+const QuestionStep = ({
+  currentQuestion,
+  setAnswerList,
+  answerList,
+}: {
+  currentQuestion: (typeof quizQuestions)[0];
+  answerList: any[];
+  setAnswerList: any;
+}) => {
   const [currentAnswer, setCurrentAnswer] = useState<string | null>(null);
 
+  const [activeIndex, setActiveIndex] = useState(0);
   async function addAnswer(
     answer: string,
     question: string,
@@ -113,102 +174,49 @@ const TutorialPage = ({ params }: { params: { tutId: string } }) => {
   }
 
   return (
-    <div className="grid gap-14 justify-center items-center content-center justify-items-center min-h-screen">
-      <div className="relative">
-        <Card className="w-96 max-w-2xl z-10 shadow-md relative backdrop-blur bg-white/35 text-center">
-          <CardContent className="p-2">
-            <Heading>10 Step Quiz</Heading>
-          </CardContent>
-        </Card>
-        <div className="grid w-full gap-2 grid-cols-10 absolute -top-1/3 left-0 px-2 justify-items-center">
-          {answerList
-            .filter((q) => q?.isCorrect !== null)
-            .map((step) => {
-              return (
-                <motion.div
-                  key={step.question}
-                  initial={{ top: 0, opacity: 0.5 }}
-                  animate={{ top: "-10%", opacity: 1 }}
-                  className="relative"
-                >
-                  <Badge
-                    variant={step.isCorrect ? "default" : "destructive"}
-                    className="w-5 h-10"
-                  />
-                </motion.div>
-              );
-            })}
-        </div>
-      </div>
-      {answerList.length !== quizQuestions.length && (
-        <div className="relative h-52 w-full">
-          {quizQuestions.map((step, questionIdx) => {
-            return (
-              <Card
-                className="w-full absolute min-h-56 backdrop-blur bg-white/35 text-center"
-                key={questionIdx}
-                style={{
-                  zIndex:
-                    -questionIdx + (activeIndex === questionIdx ? 100 : 0),
-                  right: activeIndex === questionIdx ? 0 : questionIdx * -5,
-                  bottom: activeIndex === questionIdx ? 0 : questionIdx * -1,
-                  transform:
-                    activeIndex === questionIdx
-                      ? ""
-                      : `rotate(${questionIdx * 1}deg)`,
-                }}
-              >
-                <CardHeader>{step.question}</CardHeader>
-                <CardContent className="pt-6 grid grid-cols-2 gap-2 text-start whitespace-pre-line">
-                  {step.answers.map((an, idx) => {
-                    return (
-                      <Button
-                        disabled={
-                          currentAnswer !== null
-                            ? currentAnswer === an
-                              ? false
-                              : true
-                            : false
-                        }
-                        variant={
-                          currentAnswer
-                            ? currentAnswer === an
-                              ? currentAnswer === step.correctAnswer
-                                ? "default"
-                                : "destructive"
-                              : "secondary"
-                            : "secondary"
-                        }
-                        onClick={async () => {
-                          if (currentAnswer) return;
+    <Card className="w-full text-center">
+      <CardHeader>{currentQuestion?.question}</CardHeader>
+      <CardContent className="pt-6 grid gap-2 text-start whitespace-pre-line">
+        {currentQuestion.answers.map((an, idx) => {
+          return (
+            <Button
+              disabled={
+                currentAnswer !== null
+                  ? currentAnswer === an
+                    ? false
+                    : an === currentQuestion.correctAnswer
+                      ? false
+                      : true
+                  : false
+              }
+              variant={
+                currentAnswer
+                  ? currentAnswer === an
+                    ? currentAnswer === currentQuestion.correctAnswer
+                      ? "default"
+                      : "destructive"
+                    : an === currentQuestion.correctAnswer
+                      ? "default"
+                      : "secondary"
+                  : "secondary"
+              }
+              onClick={async () => {
+                if (currentAnswer) return;
 
-                          await addAnswer(
-                            an,
-                            step.question,
-                            an === step.correctAnswer,
-                          );
-                        }}
-                        key={idx}
-                      >
-                        {an}
-                      </Button>
-                    );
-                  })}
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      )}
-      {answerList.length === quizQuestions.length && (
-        <div className="flex flex-col gap-2">
-          <Card className="w-full shadow-md">
-            <CardHeader>Well-done 🎉 now let's review your answers</CardHeader>
-          </Card>
-          <Button className="shadow-md">Review Answers</Button>
-        </div>
-      )}
-    </div>
+                await addAnswer(
+                  an,
+                  currentQuestion.question,
+                  an === currentQuestion.correctAnswer,
+                );
+              }}
+              key={idx}
+            >
+              {an}
+            </Button>
+          );
+        })}
+      </CardContent>
+    </Card>
   );
 };
 
