@@ -6,7 +6,7 @@ import { Heading } from "~/components/ui/Typography";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
-import { wait } from "~/lib/utils";
+import { cn, wait } from "~/lib/utils";
 const quizQuestions = [
   {
     question: 'What does "koko" mean?',
@@ -80,92 +80,145 @@ const quizQuestions = [
   },
 ];
 
+type AnswerT = {
+  answer: string | null;
+  question: string;
+  isCorrect: boolean | null;
+};
+
+type CurrentAnswerStateT = [string | null, Function];
+
 const TutorialPage = ({ params }: { params: { tutId: string } }) => {
-  const [answerList, setAnswerList] = useState<
-    { answer: string | null; question: string; isCorrect: boolean | null }[]
-  >([]);
+  const [answerList, setAnswerList] = useState<AnswerT[]>([]);
+  const [currentAnswer, setCurrentAnswer] = useState<string | null>(null);
+  const [isQuestionChecked, setIsQuestionChecked] = useState(false);
 
   return (
     <div className="grid gap-14 content-between sm:content-around p-4 sm:p-0 sm:justify-center min-h-screen">
-      <div className="relative w-full sm:mt-0 mt-5">
-        <Card className="w-full sm:min-w-96 text-center">
-          <CardContent className="p-2">
-            <Heading>Step By Step Tutorial</Heading>
-          </CardContent>
-        </Card>
-        <div className="grid w-full -z-10 gap-2 grid-cols-10 absolute -top-1/3 left-0 px-2 justify-items-center">
-          {answerList
-            .filter((q) => q?.isCorrect !== null)
-            .map((step) => {
-              return (
-                <motion.div
-                  key={step.question}
-                  initial={{ top: 0, opacity: 0.5 }}
-                  animate={{ top: "-10%", opacity: 1 }}
-                  className="relative"
-                >
-                  <Badge
-                    variant={step.isCorrect ? "default" : "destructive"}
-                    className="w-5 h-10"
-                  />
-                </motion.div>
-              );
-            })}
-        </div>
-      </div>
+      <PageStepByStepTitle answerList={answerList} />
       {answerList.length !== quizQuestions.length && quizQuestions.length && (
         <QuestionStep
           currentQuestion={
             quizQuestions[answerList.length] as (typeof quizQuestions)[0]
           }
+          isQuestionChecked={isQuestionChecked}
+          currentAnswerState={[currentAnswer, setCurrentAnswer]}
           answerList={answerList}
           setAnswerList={setAnswerList}
         />
       )}
-      {answerList.length === quizQuestions.length && <FinishCard />}
-      {/* TODO: we need a check button and a skkip button just like how doulingo does it */}
-      <div />
+      {answerList.length === quizQuestions.length && (
+        <>
+          <FinishCard /> <div />
+        </>
+      )}
+      {answerList.length !== quizQuestions.length && (
+        <SkipAndContinue
+          currentQuestion={
+            quizQuestions[answerList.length] as (typeof quizQuestions)[0]
+          }
+          isQuestionCheckedState={[isQuestionChecked, setIsQuestionChecked]}
+          answerListState={[answerList, setAnswerList]}
+          currentAnswerState={[currentAnswer, setCurrentAnswer]}
+        />
+      )}
     </div>
   );
 };
 
+const PageStepByStepTitle = ({ answerList }: { answerList: AnswerT[] }) => {
+  return (
+    <div className="relative w-full sm:mt-0 mt-5">
+      <Card className="w-full sm:min-w-96 text-center">
+        <CardContent className="p-2">
+          <Heading>Step By Step Tutorial</Heading>
+        </CardContent>
+      </Card>
+      <div className="grid w-full -z-10 gap-2 grid-cols-10 absolute -top-1/3 left-0 px-2 justify-items-center">
+        {answerList
+          .filter((q) => q?.isCorrect !== null)
+          .map((step) => {
+            return (
+              <motion.div
+                key={step.question}
+                initial={{ top: 0, opacity: 0.5 }}
+                animate={{ top: "-10%", opacity: 1 }}
+                className="relative"
+              >
+                <Badge
+                  variant={step.isCorrect ? "default" : "destructive"}
+                  className="w-5 h-10"
+                />
+              </motion.div>
+            );
+          })}
+      </div>
+    </div>
+  );
+};
+
+function SkipAndContinue({
+  currentAnswerState,
+  answerListState,
+  currentQuestion,
+  isQuestionCheckedState,
+}: {
+  currentAnswerState: CurrentAnswerStateT;
+  answerListState: [AnswerT[], Function];
+  currentQuestion: (typeof quizQuestions)[0];
+  isQuestionCheckedState: [boolean, Function];
+}) {
+  const [currentAnswer, setCurrentAnswer] = currentAnswerState;
+  const [answerList, setAnswerList] = answerListState;
+  const [isQuestionChecked, setIsQuestionChecked] = isQuestionCheckedState;
+
+  async function addAnswer() {
+    setIsQuestionChecked(true);
+    await wait(800);
+
+    const answer = currentAnswer;
+    const question = currentQuestion.question;
+    const isCorrect = currentQuestion.correctAnswer === answer;
+
+    setCurrentAnswer(null);
+    setAnswerList([...answerList, { answer, question, isCorrect }]);
+    setIsQuestionChecked(false);
+  }
+
+  return (
+    <div className="flex justify-between">
+      <Button
+        variant="outline"
+        className="opacity-70"
+        onClick={() => addAnswer()}
+        disabled={!!currentAnswer || !isQuestionChecked}
+      >
+        Skip
+      </Button>
+      <Button
+        onClick={() => {
+          addAnswer();
+        }}
+        disabled={!currentAnswer || isQuestionChecked || !currentQuestion}
+      >
+        Continue
+      </Button>
+    </div>
+  );
+}
+
 const QuestionStep = ({
   currentQuestion,
-  setAnswerList,
-  answerList,
+  currentAnswerState,
+  isQuestionChecked,
 }: {
   currentQuestion: (typeof quizQuestions)[0];
   answerList: any[];
   setAnswerList: any;
+  currentAnswerState: CurrentAnswerStateT;
+  isQuestionChecked: boolean;
 }) => {
-  const [currentAnswer, setCurrentAnswer] = useState<string | null>(null);
-
-  const [activeIndex, setActiveIndex] = useState(0);
-  async function addAnswer(
-    answer: string,
-    question: string,
-    isCorrect: boolean,
-  ) {
-    setCurrentAnswer(answer);
-    await wait(800);
-    setCurrentAnswer(null);
-    setAnswerList([...answerList, { answer, question, isCorrect }]);
-    changeActiveIndex(1);
-  }
-
-  function changeActiveIndex(next: -1 | 1) {
-    if (activeIndex === 0) {
-      setActiveIndex(activeIndex + 1);
-      return;
-    }
-
-    if (activeIndex === quizQuestions.length - 1) {
-      setActiveIndex(activeIndex - 1);
-      return;
-    }
-
-    setActiveIndex(activeIndex + next);
-  }
+  const [currentAnswer, setCurrentAnswer] = currentAnswerState;
 
   return (
     <Card className="w-full text-center">
@@ -174,34 +227,38 @@ const QuestionStep = ({
         {currentQuestion.answers.map((an, idx) => {
           return (
             <Button
+              className={cn({
+                "border-primary text-primary hover:text-primary":
+                  currentAnswer === an && !isQuestionChecked,
+              })}
               disabled={
-                currentAnswer !== null
-                  ? currentAnswer === an
-                    ? false
-                    : an === currentQuestion.correctAnswer
+                currentAnswer
+                  ? isQuestionChecked
+                    ? currentAnswer === an
                       ? false
-                      : true
+                      : an === currentQuestion.correctAnswer
+                        ? false
+                        : true
+                    : false
                   : false
               }
               variant={
                 currentAnswer
-                  ? currentAnswer === an
-                    ? currentAnswer === currentQuestion.correctAnswer
-                      ? "default"
-                      : "destructive"
-                    : an === currentQuestion.correctAnswer
-                      ? "default"
-                      : "secondary"
-                  : "secondary"
+                  ? !isQuestionChecked
+                    ? "outline"
+                    : currentAnswer === an
+                      ? currentAnswer === currentQuestion.correctAnswer
+                        ? "default"
+                        : "destructive"
+                      : an === currentQuestion.correctAnswer
+                        ? "default"
+                        : "outline"
+                  : "outline"
               }
               onClick={async () => {
-                if (currentAnswer) return;
+                if (isQuestionChecked) return;
 
-                await addAnswer(
-                  an,
-                  currentQuestion.question,
-                  an === currentQuestion.correctAnswer,
-                );
+                setCurrentAnswer(an);
               }}
               key={idx}
             >
