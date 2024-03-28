@@ -1,8 +1,10 @@
 "use client";
 import { animate } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
+import { api } from "~/trpc/react";
 
 const phrases = [
   "Enter a phrase to learn it!",
@@ -14,6 +16,9 @@ const phrases = [
 export function PhraseInput() {
   const [placeholder, setPlaceholder] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const createTutorial = api.tutorial.create.useMutation();
+  const [value, setValue] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     async function runAnimations() {
@@ -48,10 +53,22 @@ export function PhraseInput() {
         className="shadow-md backdrop-blur-sm xs:text-lg lg:text-2xl md:text-xl bg-white/50"
         maxLength={300}
         placeholder={placeholder}
+        onChange={(e) => setValue(e.target.value)}
       />
       <Button
         className="shadow-md lg:text-2xl md:text-xl sm:text-lg md:py-6"
         size="lg"
+        isLoading={createTutorial.isLoading}
+        disabled={createTutorial.isLoading}
+        onClick={async () => {
+          if (value) {
+            const res = await createTutorial.mutateAsync({
+              prompt: value,
+            });
+
+            router.push(`/tut/${res.id}`);
+          }
+        }}
       >
         Generate Tutorial
       </Button>

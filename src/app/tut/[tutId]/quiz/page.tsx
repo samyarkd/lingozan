@@ -7,76 +7,79 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { cn, wait } from "~/lib/utils";
+
 const quizQuestions = [
   {
-    question: 'What does "koko" mean?',
-    answers: ["This place", "That place", "Where", "What"],
-    correctAnswer: "This place",
+    question: "What does 'こんにちは' mean?",
+    answers: ["Goodbye", "Hello", "Thank you", "How are you"],
+    correctAnswer: "Hello",
   },
   {
-    question: 'What is the function of the particle "wa"?',
-    answers: ["Subject marker", "Topic marker", "Object marker", "Verb ender"],
-    correctAnswer: "Topic marker",
-  },
-  {
-    question: 'What does "doko" mean?',
-    answers: ["Here", "There", "Where", "What"],
-    correctAnswer: "Where",
-  },
-  {
-    question: 'What is "desu"?',
-    answers: ["To be (casual)", "To be (polite)", "Is", "Are"],
-    correctAnswer: "To be (polite)",
-  },
-  {
-    question: 'What does the particle "ka" indicate?',
-    answers: ["Statement", "Command", "Question", "Exclamation"],
-    correctAnswer: "Question",
-  },
-  {
-    question: 'How many words are in "Koko wa doko desu ka?"',
-    answers: ["3", "4", "5", "6"],
-    correctAnswer: "5",
-  },
-  {
-    question: "What is the literal English translation?",
+    question: "What does '私の名前は' mean?",
     answers: [
-      "This is where?",
-      "Where is this?",
-      "This place where is?",
-      "This where place is?",
+      "My name is",
+      "Where are you from",
+      "What is your name",
+      "Nice to meet you",
     ],
-    correctAnswer: "Where is this?",
+    correctAnswer: "My name is",
   },
   {
-    question: 'If you drop "desu", what is the phrase?',
-    answers: [
-      "Koko wa doko ka",
-      "Koko doko desu",
-      "Koko doko ka",
-      "Doko koko ka",
-    ],
-    correctAnswer: "Koko wa doko ka",
+    question: "What does 'サムヤール' mean?",
+    answers: ["Hello", "Thank you", "Goodbye", "Samyar (name)"],
+    correctAnswer: "Samyar (name)",
   },
   {
-    question: 'What is the response if someone says "Kore wa ryokan desu"?',
-    answers: [
-      "This is a hotel.",
-      "Where is this?",
-      "That is a hotel.",
-      "Hotel this is.",
-    ],
-    correctAnswer: "This is a hotel.",
+    question: "What does 'です' indicate in Japanese?",
+    answers: ["Question", "Politeness", "Negation", "Future tense"],
+    correctAnswer: "Politeness",
   },
   {
-    question: 'What cultural context is implied by using the polite "desu"?',
+    question: "Which particle is used for the topic in Japanese?",
+    answers: ["は (wa)", "を (wo)", "に (ni)", "で (de)"],
+    correctAnswer: "は (wa)",
+  },
+  {
+    question: "What does '非常に' mean?",
+    answers: ["Good", "Very", "Not", "Never"],
+    correctAnswer: "Very",
+  },
+  {
+    question: "What is the polite form of 'to be' in Japanese?",
     answers: [
-      "Casual conversation",
-      "Formal situation",
-      "Impolite manner",
-      "No implication",
+      "です (desu)",
+      "いいえ (iie)",
+      "はい (hai)",
+      "ありがとう (arigatou)",
     ],
-    correctAnswer: "Formal situation",
+    correctAnswer: "です (desu)",
+  },
+  {
+    question:
+      "What is important to pay attention to in Japanese pronunciation?",
+    answers: ["Long vowels", "Short vowels", "Consonants", "Grammar"],
+    correctAnswer: "Long vowels",
+  },
+  {
+    question: "What should you do to improve pronunciation and fluency?",
+    answers: [
+      "Practice speaking aloud",
+      "Listen to music",
+      "Read silently",
+      "Watch movies",
+    ],
+    correctAnswer: "Practice speaking aloud",
+  },
+  {
+    question:
+      "What does the phrase 'Watashi wa shōrai ni tsuite hijō ni rakkanteki desu' mean?",
+    answers: [
+      "I am very tired",
+      "I am very optimistic about the future",
+      "I am very hungry",
+      "I am very happy",
+    ],
+    correctAnswer: "I am very optimistic about the future",
   },
 ];
 
