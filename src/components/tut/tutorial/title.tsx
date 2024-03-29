@@ -14,7 +14,7 @@ const TutorialTitle = ({
 }) => {
   return (
     <div className="relative sm:mt-0 mt-5">
-      <Card className="w-full sm:min-w-96 text-center">
+      <Card className="w-full sm:min-w-[500px] text-center">
         <CardContent className="p-2">
           <Heading>{title}</Heading>
         </CardContent>
