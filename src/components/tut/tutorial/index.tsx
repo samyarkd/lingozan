@@ -1,10 +1,12 @@
 "use client";
 
 import { TutorialSteps } from "@prisma/client";
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { useStep } from "usehooks-ts";
 import TutorialActions from "./actions";
 import TutorialTitle from "./title";
+import Translation from "./translation";
 import TutorialCard from "./tutorialCard";
 
 interface TutorialProps {
@@ -29,6 +31,11 @@ const Tutorial = ({ tutorialId, tutorialSteps }: TutorialProps) => {
           title: currnetCard?.title as string,
         }}
       />
+      <ErrorBoundary fallback={<p>⚠️Something went wrong</p>}>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Translation />
+        </Suspense>
+      </ErrorBoundary>
 
       <TutorialCard {...{ content: currnetCard?.body as string }} />
 
