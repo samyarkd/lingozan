@@ -1,3 +1,4 @@
+using extension auth;
 module default {
   type Account {
     required type: str;
