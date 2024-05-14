@@ -2,6 +2,7 @@ import "~/styles/globals.css";
 
 import { Inter } from "next/font/google";
 
+import Header from "~/components/layout/Header";
 import Providers from "~/components/providers";
 import { ThemeProvider } from "~/components/theme-provider";
 import { cn } from "~/lib/utils";
@@ -30,7 +31,10 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="light">
           <TRPCReactProvider>
-            <Providers>{children}</Providers>
+            <Providers>
+              <Header />
+              {children}
+            </Providers>
           </TRPCReactProvider>
         </ThemeProvider>
       </body>

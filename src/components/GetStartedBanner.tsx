@@ -14,7 +14,7 @@ const GetStartedBanner = () => {
           <span className="text-zinc-500">
             "こんにちは、リンゴザンです。"
           </span>{" "}
-          and I will take care of the rest.
+          and I will take care of the learning curve.
         </p>{" "}
         <p>
           Click <b className="font-semibold">"Generate Tutorial"</b> and I'll
