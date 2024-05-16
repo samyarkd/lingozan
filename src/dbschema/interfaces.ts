@@ -84,10 +84,9 @@ export namespace $default {
   }
   export interface User extends std.$Object {
     "email"?: string | null;
-    "emailVerified"?: Date | null;
-    "image"?: string | null;
     "name"?: string | null;
     "identity": ext.auth.Identity;
+    "avatar_url"?: string | null;
   }
   export interface current_user extends User {}
 }

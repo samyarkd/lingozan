@@ -10,11 +10,11 @@ module default {
 
   type User {
     name: str;
+    avatar_url: str;
+
     email: str {
       constraint exclusive;
     }
-    emailVerified:    datetime;
-    image:            str;
     required identity: ext::auth::Identity {
       constraint exclusive;
     };
