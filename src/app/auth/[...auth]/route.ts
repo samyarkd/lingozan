@@ -22,7 +22,7 @@ export const { GET, POST } = auth.createAuthRouteHandlers({
       await db
         .insert(db.User, {
           name: userData.name,
-          avatar_url: userData.email ?? undefined,
+          avatar_url: userData.avatar_url ?? undefined,
           email: userData.email ?? undefined,
           identity: db.assert_exists(
             db.select(db.ext.auth.Identity, () => ({

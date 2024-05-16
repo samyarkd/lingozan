@@ -5,7 +5,6 @@ const Lingozan = () => {
       xmlnsXlink="http://www.w3.org/1999/xlink"
       width="150"
       height="30"
-      className="mt-4"
       viewBox="0 0 870 294"
     >
       <svg

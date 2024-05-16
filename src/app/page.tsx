@@ -10,7 +10,7 @@ export default async function Home() {
   noStore();
 
   return (
-    <main className="md:p-16 p-4 sm:p-10 h-screen flex flex-col items-center justify-end">
+    <main className="md:p-16 p-4 sm:p-10 min-h-[calc(100vh-50px)] flex flex-col items-center justify-end">
       <GetStartedBanner />
       <PhraseInput />
     </main>
