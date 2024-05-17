@@ -1,10 +1,9 @@
-import { translate } from "@vitalets/google-translate-api";
-import { use } from "react";
+type TranslationProps = {
+  translation: string;
+};
 
-const Translation = () => {
-  const res = use(translate("Привет мир"));
-
-  return <div>{res.text}</div>;
+const Translation = (props: TranslationProps) => {
+  return <div>{props.translation}</div>;
 };
 
 export default Translation;

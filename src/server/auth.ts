@@ -9,6 +9,7 @@ export const getServerAuthSession = async () => {
   const cu = await db
     .select(db.global.current_user, () => {
       return {
+        id: true,
         name: true,
         avatar_url: true,
       };

@@ -74,29 +74,32 @@ export namespace cfg {
 }
 export namespace $default {
   export interface Tutorial extends std.$Object {
-    "tutorialSteps": TutorialSteps[];
     "user": User;
     "phrase": string;
+    "tutorialSteps": TutorialStep[];
+    "translation": string;
   }
-  export interface TutorialSteps extends std.$Object {
+  export interface TutorialStep extends std.$Object {
     "body": string;
     "title": string;
+    "tutorial": Tutorial;
   }
   export interface User extends std.$Object {
     "email"?: string | null;
     "name"?: string | null;
     "identity": ext.auth.Identity;
     "avatar_url"?: string | null;
+    "tutorials": Tutorial[];
   }
   export interface current_user extends User {}
 }
 import Tutorial = $default.Tutorial;
-import TutorialSteps = $default.TutorialSteps;
+import TutorialStep = $default.TutorialStep;
 import User = $default.User;
 import current_user = $default.current_user;
 export type {
   Tutorial,
-  TutorialSteps,
+  TutorialStep,
   User,
   current_user
 };
@@ -493,7 +496,7 @@ export interface types {
   };
   "default": {
     "Tutorial": $default.Tutorial;
-    "TutorialSteps": $default.TutorialSteps;
+    "TutorialStep": $default.TutorialStep;
     "User": $default.User;
     "current_user": $default.current_user;
   };

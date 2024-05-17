@@ -2,16 +2,18 @@ import { ChatAnthropic } from "@langchain/anthropic";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { StructuredOutputParser } from "langchain/output_parsers";
 import { ChatPromptTemplate } from "langchain/prompts";
+import { env } from "process";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 const model = new ChatAnthropic({
-  anthropicApiKey: process.env.ANTHROPIC_API_KEY || "",
+  anthropicApiKey: env.ANTHROPIC_API_KEY,
 });
 
 const parser = StructuredOutputParser.fromZodSchema(
   z.object({
+    translation: z.string().describe("Translation of the phrase to english"),
     tutorial: z
       .array(
         z.object({
@@ -64,12 +66,14 @@ export const tutorialRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const prompt = input.prompt;
 
-      const existingTutorial = await ctx.db.tutorial.findFirst({
-        where: {
-          userId: ctx.session.user.id,
-          phrase: prompt,
-        },
-      });
+      const existingTutorial = await ctx.db
+        .select(ctx.db.Tutorial, (tutorial) => {
+          return {
+            phrase: true,
+            filter_single: ctx.db.op(tutorial.phrase, "=", prompt),
+          };
+        })
+        .run(ctx.session.client);
 
       if (existingTutorial) {
         return existingTutorial;
@@ -79,37 +83,66 @@ export const tutorialRouter = createTRPCRouter({
         phrase: prompt,
         format_instructions: parser.getFormatInstructions(),
         level: "beginner",
-        language: "Japanese",
+        language: "Auto Detect the language",
       });
 
-      const tutorial = await ctx.db.tutorial.create({
-        data: {
-          phrase: prompt,
-          userId: ctx.session.user.id,
-          tutorialSteps: {
-            createMany: {
-              data: result.tutorial.map((step) => ({
-                body: step.text,
-                title: step.title,
+      const tutorial = ctx.db.insert(ctx.db.Tutorial, {
+        phrase: prompt,
+        translation: result.translation,
+        user: ctx.db.select(ctx.db.User, (user) => {
+          return {
+            filter_single: ctx.db.op(
+              user.id,
+              "=",
+              ctx.db.uuid(ctx.session.user.id),
+            ),
+          };
+        }),
+      });
+
+      return await ctx.session.client.transaction(async () => {
+        const res = await tutorial.run(ctx.session.client);
+
+        const query = ctx.db.params({ items: ctx.db.json }, (params) => {
+          return ctx.db.for(ctx.db.json_array_unpack(params.items), (item) => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+            return ctx.db.insert(ctx.db.TutorialStep, {
+              body: ctx.db.cast(ctx.db.str, item.body),
+              title: ctx.db.cast(ctx.db.str, item.title),
+              tutorial: ctx.db.select(ctx.db.Tutorial, () => ({
+                filter_single: { id: ctx.db.uuid(res.id) },
               })),
-            },
-          },
-        },
-      });
+            });
+          });
+        });
 
-      return tutorial;
+        await query.run(ctx.session.client, {
+          items: result.tutorial.map((tut) => ({
+            body: tut.text,
+            title: tut.title,
+          })),
+        });
+
+        return res;
+      });
     }),
 
   getTutorial: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      return ctx.db.tutorial.findUnique({
-        where: {
-          id: input.id,
-        },
-        include: {
-          tutorialSteps: true,
-        },
-      });
+      return ctx.db
+        .select(ctx.db.Tutorial, () => ({
+          filter_single: {
+            id: ctx.db.uuid(input.id),
+          },
+          id: true,
+          phrase: true,
+          translation: true,
+          tutorialSteps: {
+            body: true,
+            title: true,
+          },
+        }))
+        .run(ctx.session.client);
     }),
 });

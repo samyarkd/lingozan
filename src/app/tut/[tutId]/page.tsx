@@ -14,12 +14,7 @@ const TutorialPage = async ({ params }: { params: { tutId: string } }) => {
     notFound();
   }
 
-  return (
-    <Tutorial
-      tutorialId={params.tutId}
-      tutorialSteps={tutorial.tutorialSteps}
-    />
-  );
+  return <Tutorial tutorialId={params.tutId} tutorial={tutorial} />;
 };
 
 export default TutorialPage;

@@ -15,19 +15,25 @@ module default {
     email: str {
       constraint exclusive;
     }
+
+    multi tutorials := (.<user[is Tutorial]);
+
     required identity: ext::auth::Identity {
       constraint exclusive;
     };
   }
 
   type Tutorial {
-    required user: User;
     required phrase: str;
-    multi tutorialSteps: TutorialSteps;
+    required user: User;
+    required translation: str;
+    multi tutorialSteps := (.<tutorial[is TutorialStep]);
   }
 
-  type TutorialSteps {
+  type TutorialStep {
     required title: str;
     required body: str;
+
+    required tutorial: Tutorial
   }
 }
