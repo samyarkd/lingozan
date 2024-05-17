@@ -1,6 +1,5 @@
 import ReactMarkdown from "react-markdown";
 import { Card, CardContent } from "~/components/ui/card";
-import MoreInfoDrawer from "../moreInfo";
 
 import remarkGfm from "remark-gfm";
 const TutorialCard = ({ content }: { content: string }) => {
@@ -14,7 +13,7 @@ const TutorialCard = ({ content }: { content: string }) => {
           >
             {content}
           </ReactMarkdown>
-          <MoreInfoDrawer />
+          {/* <MoreInfoDrawer /> */}
         </CardContent>
       </Card>
     </div>

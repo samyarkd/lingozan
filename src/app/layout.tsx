@@ -26,14 +26,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body
-        className={cn("font-sans bg-background min-h-screen", inter.variable)}
-      >
+      <body className={cn("font-sans bg-background", inter.variable)}>
         <ThemeProvider attribute="class" defaultTheme="light">
           <TRPCReactProvider>
             <Providers>
               <Header />
-              {children}
+              <main className="min-h-[calc(100vh-50px)] flex flex-col py-10">
+                {children}
+              </main>
             </Providers>
           </TRPCReactProvider>
         </ThemeProvider>

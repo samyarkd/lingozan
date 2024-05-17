@@ -1,7 +1,6 @@
 "use client";
 
 import ReactMarkdown from "react-markdown";
-import MoreInfoDrawer from "~/components/tut/moreInfo";
 import { Heading } from "~/components/ui/Typography";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 
@@ -39,7 +38,7 @@ const ReviewAnswers = () => {
               <ReactMarkdown className="text-xm sm:text-base">
                 {content.content}
               </ReactMarkdown>
-              <MoreInfoDrawer />
+              {/* <MoreInfoDrawer /> */}
             </CardContent>
           </Card>
         );

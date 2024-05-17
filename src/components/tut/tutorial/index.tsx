@@ -33,7 +33,7 @@ const TutorialPage = ({ tutorialId, tutorial }: TutorialProps) => {
   const currnetCard = useMemo(updateCurrentTutorial, [currentStep]);
 
   return (
-    <div className="grid p-4 mt-6 sm:p-0 gap-6 max-w-screen-sm mx-auto sm:justify-center content-between sm:content-around min-h-screen">
+    <div className="grid flex-grow p-4 sm:p-0 gap-6 max-w-screen-sm mx-auto sm:justify-center content-between sm:content-around h-full ">
       <TutorialTitle
         {...{
           currentStep,
@@ -43,7 +43,10 @@ const TutorialPage = ({ tutorialId, tutorial }: TutorialProps) => {
       />
       <ErrorBoundary fallback={<p>⚠️Something went wrong</p>}>
         <Suspense fallback={<div>Loading...</div>}>
-          <Translation translation={tutorial.translation} />
+          <Translation
+            original={tutorial.phrase}
+            translation={tutorial.translation}
+          />
         </Suspense>
       </ErrorBoundary>
 
