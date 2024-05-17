@@ -18,7 +18,7 @@ const Header = async () => {
     .run(session.client);
 
   return (
-    <div className="h-full flex justify-between items-center sticky top-0 border-b border-solid border-primary/20 p-2">
+    <div className="h-full z-50 bg-emerald-50 backdrop-blur flex justify-between items-center sticky top-0 border-b border-solid border-primary/20 p-2">
       <Lingozan />
       {isSignedIn ? (
         <div className="flex gap-2 items-center">
