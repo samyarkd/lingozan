@@ -62,6 +62,11 @@ export const quizRouter = createTRPCRouter({
           return {
             translation: true,
             phrase: true,
+            tutorialQuestions: {
+              answers: true,
+              correctAnswer: true,
+              title: true,
+            },
             filter_single: {
               id: db.uuid(input.id),
             },
@@ -73,7 +78,21 @@ export const quizRouter = createTRPCRouter({
         throw new Error("Tutorial Not Found");
       }
 
-      // TODO: add the quiz to database and return it if it exists
+      if (tutorial.tutorialQuestions.length) {
+        return (
+          tutorial.tutorialQuestions as Array<{
+            title: string;
+            answers: string[];
+            correctAnswer: string;
+          }>
+        ).map((v) => {
+          return {
+            questions: v.title,
+            answers: v.answers,
+            correctAnswer: v.answers.findIndex((a) => a === v.correctAnswer),
+          };
+        });
+      }
 
       const result = await chain.invoke({
         phrase: tutorial.phrase,
@@ -81,6 +100,30 @@ export const quizRouter = createTRPCRouter({
         format_instructions: parser.getFormatInstructions(),
         level: "beginner",
         language: "Auto Detect the language",
+      });
+
+      await ctx.session.client.transaction(async () => {
+        const query = ctx.db.params({ items: ctx.db.json }, (params) => {
+          return ctx.db.for(ctx.db.json_array_unpack(params.items), (item) => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+            return ctx.db.insert(ctx.db.Question, {
+              correctAnswer: ctx.db.cast(ctx.db.str, item.correctAnswer),
+              title: ctx.db.cast(ctx.db.str, item.title),
+              answers: ctx.db.cast(ctx.db.array(ctx.db.str), item.answers),
+              tutorial: ctx.db.select(ctx.db.Tutorial, () => ({
+                filter_single: { id: ctx.db.uuid(input.id) },
+              })),
+            });
+          });
+        });
+
+        await query.run(ctx.session.client, {
+          items: result.quiz.map((tut) => ({
+            answers: tut.answers,
+            correctAnswer: tut.answers[tut.correctAnswer],
+            title: tut.question,
+          })),
+        });
       });
 
       return result;

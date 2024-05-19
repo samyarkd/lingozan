@@ -28,11 +28,20 @@ module default {
     required user: User;
     required translation: str;
     multi tutorialSteps := (.<tutorial[is TutorialStep]);
+    multi tutorialQuestions := (.<tutorial[is Question]);
   }
 
   type TutorialStep {
     required title: str;
     required body: str;
+
+    required tutorial: Tutorial
+  }
+
+  type Question {
+    required title: str;
+    required answers: array<str>;
+    required correctAnswer: str;
 
     required tutorial: Tutorial
   }

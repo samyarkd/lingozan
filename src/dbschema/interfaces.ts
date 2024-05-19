@@ -73,11 +73,18 @@ export namespace cfg {
   }
 }
 export namespace $default {
+  export interface Question extends std.$Object {
+    "tutorial": Tutorial;
+    "correctAnswer": string;
+    "title": string;
+    "answers": string[];
+  }
   export interface Tutorial extends std.$Object {
     "user": User;
     "phrase": string;
     "tutorialSteps": TutorialStep[];
     "translation": string;
+    "tutorialQuestions": Question[];
   }
   export interface TutorialStep extends std.$Object {
     "body": string;
@@ -93,11 +100,13 @@ export namespace $default {
   }
   export interface current_user extends User {}
 }
+import Question = $default.Question;
 import Tutorial = $default.Tutorial;
 import TutorialStep = $default.TutorialStep;
 import User = $default.User;
 import current_user = $default.current_user;
 export type {
+  Question,
   Tutorial,
   TutorialStep,
   User,
@@ -495,6 +504,7 @@ export interface types {
     "mTLS": cfg.mTLS;
   };
   "default": {
+    "Question": $default.Question;
     "Tutorial": $default.Tutorial;
     "TutorialStep": $default.TutorialStep;
     "User": $default.User;
