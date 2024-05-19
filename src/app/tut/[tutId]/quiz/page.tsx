@@ -4,7 +4,7 @@ import { api } from "~/trpc/server";
 const page = async ({ params }: { params: { tutId: string } }) => {
   const quiz = await api.quiz.generateQuiz.mutate({ id: params.tutId });
 
-  return <QuizPage quiz={quiz} />;
+  return <QuizPage tutId={params.tutId} quiz={quiz} />;
 };
 
 export default page;

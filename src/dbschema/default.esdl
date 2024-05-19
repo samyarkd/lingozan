@@ -29,6 +29,7 @@ module default {
     required translation: str;
     multi tutorialSteps := (.<tutorial[is TutorialStep]);
     multi tutorialQuestions := (.<tutorial[is Question]);
+    multi takenQuizzes := (.<tutorial[is TakenQuiz]);
   }
 
   type TutorialStep {
@@ -43,6 +44,23 @@ module default {
     required answers: array<str>;
     required correctAnswer: str;
 
-    required tutorial: Tutorial
+    required tutorial: Tutorial;
+   
+    multi answeredQuestions := (.<question[is AnsweredQuestion]);
+  }
+
+  type TakenQuiz {
+    review: str;
+
+    multi answeredQuestions := (.<takenQuiz[is AnsweredQuestion]);
+    required tutorial: Tutorial;
+  }
+
+  type AnsweredQuestion {
+    required isCorrect: bool;
+    required userAnswer: str;
+
+    required question: Question;
+    required takenQuiz: TakenQuiz;
   }
 }

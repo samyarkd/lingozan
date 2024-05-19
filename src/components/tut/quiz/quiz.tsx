@@ -1,23 +1,26 @@
 "use client";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Heading } from "~/components/ui/Typography";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { cn, wait } from "~/lib/utils";
-import { type api } from "~/trpc/server";
+import { api } from "~/trpc/react";
+import { type api as serverApi } from "~/trpc/server";
 
 type QuizQuestion = {
   question: string;
   answers: string[];
   correctAnswer: string;
+  id: string;
+  title: string;
 };
 
 type AnswerT = {
   answer: string | null;
-  question: string;
+  questionId: string;
   isCorrect: boolean | null;
 };
 
@@ -25,19 +28,23 @@ type CurrentAnswerStateT = [string | null, Function];
 
 const QuizPage = ({
   quiz,
+  tutId,
 }: {
-  quiz: NonNullable<Awaited<ReturnType<typeof api.quiz.generateQuiz.mutate>>>;
+  quiz: NonNullable<
+    Awaited<ReturnType<typeof serverApi.quiz.generateQuiz.mutate>>
+  >;
+  tutId: string;
 }) => {
   const [answerList, setAnswerList] = useState<AnswerT[]>([]);
   const [currentAnswer, setCurrentAnswer] = useState<string | null>(null);
   const [isQuestionChecked, setIsQuestionChecked] = useState(false);
 
-  const quizQuestions: QuizQuestion[] = useMemo(() => {
-    return quiz.quiz.map(
+  const quizQuestions = useMemo(() => {
+    return quiz.map(
       (v) =>
         ({
           ...v,
-          correctAnswer: v.answers[v.correctAnswer],
+          question: v.title,
         }) satisfies QuizQuestion,
     );
   }, [quiz]);
@@ -51,12 +58,11 @@ const QuizPage = ({
           isQuestionChecked={isQuestionChecked}
           currentAnswerState={[currentAnswer, setCurrentAnswer]}
           answerList={answerList}
-          setAnswerList={setAnswerList}
         />
       )}
       {answerList.length === quizQuestions.length && (
         <>
-          <FinishCard /> <div />
+          <FinishCard answerList={answerList} tutId={tutId} /> <div />
         </>
       )}
       {answerList.length !== quizQuestions.length && (
@@ -85,7 +91,7 @@ const PageStepByStepTitle = ({ answerList }: { answerList: AnswerT[] }) => {
           .map((step) => {
             return (
               <motion.div
-                key={step.question}
+                key={step.questionId}
                 initial={{ top: 0, opacity: 0.5 }}
                 animate={{ top: "-10%", opacity: 1 }}
                 className="relative"
@@ -109,7 +115,7 @@ function SkipAndContinue({
   isQuestionCheckedState,
 }: {
   currentAnswerState: CurrentAnswerStateT;
-  answerListState: [AnswerT[], Function];
+  answerListState: [AnswerT[], (data: AnswerT[]) => void];
   currentQuestion: QuizQuestion;
   isQuestionCheckedState: [boolean, Function];
 }) {
@@ -121,12 +127,13 @@ function SkipAndContinue({
     setIsQuestionChecked(true);
     await wait(800);
 
-    const answer = currentAnswer;
-    const question = currentQuestion.question;
-    const isCorrect = currentQuestion.correctAnswer === answer;
+    const isCorrect = currentQuestion.correctAnswer === currentAnswer;
 
     setCurrentAnswer(null);
-    setAnswerList([...answerList, { answer, question, isCorrect }]);
+    setAnswerList([
+      ...answerList,
+      { answer: currentAnswer, questionId: currentQuestion.id, isCorrect },
+    ]);
     setIsQuestionChecked(false);
   }
 
@@ -159,7 +166,6 @@ const QuestionStep = ({
 }: {
   currentQuestion: QuizQuestion;
   answerList: AnswerT[];
-  setAnswerList: Function;
   currentAnswerState: CurrentAnswerStateT;
   isQuestionChecked: boolean;
 }) => {
@@ -216,14 +222,37 @@ const QuestionStep = ({
   );
 };
 
-const FinishCard = () => {
+const FinishCard = ({
+  answerList,
+  tutId,
+}: {
+  answerList: AnswerT[];
+  tutId: string;
+}) => {
+  const postAnswers = api.quiz.postAnswers.useMutation();
+
+  useEffect(() => {
+    !postAnswers.isSuccess &&
+      void postAnswers.mutate({
+        answers: answerList.map((q) => ({
+          questionId: q.questionId,
+          userAnswer: q.answer ?? "",
+        })),
+        tutId,
+      });
+  }, []);
+
   return (
     <div className="flex flex-col gap-2">
       <Card className="w-full shadow-md">
         <CardHeader>Well-done 🎉 now let&#39s review your answers</CardHeader>
       </Card>
       <Link href="review">
-        <Button className="shadow-md w-full">Review Answers</Button>
+        {postAnswers.isSuccess && (
+          <Link href={`/tut/${tutId}/review/${postAnswers.data.takeQuizId}`}>
+            <Button className={"shadow-md w-full"}>Review Answers</Button>
+          </Link>
+        )}
       </Link>
     </div>
   );

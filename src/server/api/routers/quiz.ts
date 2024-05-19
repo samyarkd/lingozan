@@ -50,10 +50,17 @@ do not return anything else other than the requested json code
 
 const chain = RunnableSequence.from([promptTemplate, model, parser]);
 
+type ReturnResponse = {
+  answers: string[];
+  correctAnswer: string;
+  id: string;
+  title: string;
+};
+
 export const quizRouter = createTRPCRouter({
   generateQuiz: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input }): Promise<Array<ReturnResponse>> => {
       const db = ctx.db;
       const edgeDbClient = ctx.session.client;
 
@@ -62,11 +69,7 @@ export const quizRouter = createTRPCRouter({
           return {
             translation: true,
             phrase: true,
-            tutorialQuestions: {
-              answers: true,
-              correctAnswer: true,
-              title: true,
-            },
+            tutorialQuestions: ctx.db.Question["*"],
             filter_single: {
               id: db.uuid(input.id),
             },
@@ -79,19 +82,7 @@ export const quizRouter = createTRPCRouter({
       }
 
       if (tutorial.tutorialQuestions.length) {
-        return (
-          tutorial.tutorialQuestions as Array<{
-            title: string;
-            answers: string[];
-            correctAnswer: string;
-          }>
-        ).map((v) => {
-          return {
-            questions: v.title,
-            answers: v.answers,
-            correctAnswer: v.answers.findIndex((a) => a === v.correctAnswer),
-          };
-        });
+        return tutorial.tutorialQuestions;
       }
 
       const result = await chain.invoke({
@@ -102,7 +93,7 @@ export const quizRouter = createTRPCRouter({
         language: "Auto Detect the language",
       });
 
-      await ctx.session.client.transaction(async () => {
+      return await ctx.session.client.transaction(async () => {
         const query = ctx.db.params({ items: ctx.db.json }, (params) => {
           return ctx.db.for(ctx.db.json_array_unpack(params.items), (item) => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -124,8 +115,82 @@ export const quizRouter = createTRPCRouter({
             title: tut.question,
           })),
         });
-      });
 
-      return result;
+        return await ctx.db
+          .select(ctx.db.Question, (q) => {
+            return {
+              id: true,
+              answers: true,
+              correctAnswer: true,
+              title: true,
+              filter: ctx.db.op(q.tutorial.id, "=", ctx.db.uuid(input.id)),
+            };
+          })
+          .run(ctx.session.client);
+      });
+    }),
+
+  postAnswers: protectedProcedure
+    .input(
+      z.object({
+        answers: z.array(
+          z.object({
+            questionId: z.string(),
+            userAnswer: z.string(),
+          }),
+        ),
+        tutId: z.string().uuid(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      // create the takenquiz record
+      const takenQuiz = await ctx.db
+        .insert(ctx.db.TakenQuiz, {
+          tutorial: ctx.db.select(ctx.db.Tutorial, () => ({
+            filter_single: { id: ctx.db.uuid(input.tutId) },
+          })),
+        })
+        .run(ctx.session.client);
+
+      // loop through the answers
+      for (const a of input.answers) {
+        // find the question
+        const question = await ctx.db
+          .select(ctx.db.Question, () => {
+            return {
+              answers: true,
+              title: true,
+              correctAnswer: true,
+              filter_single: {
+                id: ctx.db.uuid(a.questionId),
+              },
+            };
+          })
+          .run(ctx.session.client);
+
+        // add the question answer
+        if (question) {
+          await ctx.db
+            .insert(ctx.db.AnsweredQuestion, {
+              isCorrect: question.correctAnswer === a.userAnswer,
+              userAnswer: a.userAnswer,
+              takenQuiz: ctx.db.select(ctx.db.TakenQuiz, () => ({
+                filter_single: {
+                  id: ctx.db.uuid(takenQuiz.id),
+                },
+              })),
+              question: ctx.db.select(ctx.db.Question, () => ({
+                filter_single: {
+                  id: ctx.db.uuid(a.questionId),
+                },
+              })),
+            })
+            .run(ctx.session.client);
+        }
+      }
+
+      return {
+        takeQuizId: takenQuiz.id,
+      };
     }),
 });

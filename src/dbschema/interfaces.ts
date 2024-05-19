@@ -73,11 +73,23 @@ export namespace cfg {
   }
 }
 export namespace $default {
+  export interface AnsweredQuestion extends std.$Object {
+    "question": Question;
+    "isCorrect": boolean;
+    "userAnswer": string;
+    "takenQuiz": TakenQuiz;
+  }
   export interface Question extends std.$Object {
     "tutorial": Tutorial;
     "correctAnswer": string;
     "title": string;
     "answers": string[];
+    "answeredQuestions": AnsweredQuestion[];
+  }
+  export interface TakenQuiz extends std.$Object {
+    "tutorial": Tutorial;
+    "review"?: string | null;
+    "answeredQuestions": AnsweredQuestion[];
   }
   export interface Tutorial extends std.$Object {
     "user": User;
@@ -85,6 +97,7 @@ export namespace $default {
     "tutorialSteps": TutorialStep[];
     "translation": string;
     "tutorialQuestions": Question[];
+    "takenQuizzes": TakenQuiz[];
   }
   export interface TutorialStep extends std.$Object {
     "body": string;
@@ -100,13 +113,17 @@ export namespace $default {
   }
   export interface current_user extends User {}
 }
+import AnsweredQuestion = $default.AnsweredQuestion;
 import Question = $default.Question;
+import TakenQuiz = $default.TakenQuiz;
 import Tutorial = $default.Tutorial;
 import TutorialStep = $default.TutorialStep;
 import User = $default.User;
 import current_user = $default.current_user;
 export type {
+  AnsweredQuestion,
   Question,
+  TakenQuiz,
   Tutorial,
   TutorialStep,
   User,
@@ -504,7 +521,9 @@ export interface types {
     "mTLS": cfg.mTLS;
   };
   "default": {
+    "AnsweredQuestion": $default.AnsweredQuestion;
     "Question": $default.Question;
+    "TakenQuiz": $default.TakenQuiz;
     "Tutorial": $default.Tutorial;
     "TutorialStep": $default.TutorialStep;
     "User": $default.User;
