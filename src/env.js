@@ -19,6 +19,7 @@ export const env = createEnv({
       .default("development"),
 
     ANTHROPIC_API_KEY: z.string(),
+    APP_URL: z.string().url().optional(),
   },
 
   /**
@@ -38,6 +39,7 @@ export const env = createEnv({
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
+    APP_URL: process.env.APP_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
