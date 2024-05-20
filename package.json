@@ -15,7 +15,7 @@
     "generate:edgeql": "bunx @edgedb/generate  edgeql-js --target ts --password -P 5656 --output-dir=./src/dbschema/edgeql-js --tls-security=insecure",
     "generate:interfaces": "bunx @edgedb/generate interfaces --password -P 5656 --tls-security=insecure --file ./src/dbschema/interfaces.ts",
     "gen:all": "bun generate:edgeql && bun generate:interfaces",
-    "gen:server": "@edgedb/generate edgeql-js --target ts --output-dir=./src/dbschema/edgeql-js && @edgedb/generate interfaces --file ./src/dbschema/interfaces.ts"
+    "gen:server": "bunx @edgedb/generate edgeql-js --target ts --output-dir=./src/dbschema/edgeql-js && bunx @edgedb/generate interfaces --file ./src/dbschema/interfaces.ts"
   },
   "dependencies": {
     "@edgedb/auth-nextjs": "^0.3.1",
