@@ -49,8 +49,6 @@ Generate a comprehensive step by step {level} tutorial for the phrase: "{phrase}
 * If the language is agglutinative, explain how suffixes change meaning and part of speech.
 
 - Pronunciation guide with audio cues for the {phrase} For languages with Kanji characters, include audio cues for both on'yomi and kun'yomi readings of relevant Kanji, along with the pronunciation of the entire phrase. also write the pronunciations for each word or phrase in "()" using english letters.
-- Contextual usage in sentences for the {phrase}
-- Interactive practice exercises for the {phrase}
 
 import follow this format:
 {format_instructions}
