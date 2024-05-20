@@ -12,12 +12,12 @@ const GetStartedBanner = () => {
           Type or paste the phrase you want to learn into the input field. For
           example,
           <span className="text-zinc-500">
-            "こんにちは、リンゴザンです。"
+            こんにちは、リンゴザンです。
           </span>{" "}
           and I will take care of the learning curve.
         </p>{" "}
         <p>
-          Click <b className="font-semibold">"Generate Tutorial"</b> and I'll
+          Click <b className="font-semibold">Generate Tutorial</b> and I&lsquoll
           provide a 10-step breakdown covering vocabulary, grammar,
           pronunciation, and cultural context.
         </p>

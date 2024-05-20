@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
-let interval: any;
+let interval: string | number | NodeJS.Timeout | undefined;
 
 type Card = {
   id: number;
@@ -21,8 +21,8 @@ export const StackedCards = ({
   offset?: number;
   scaleFactor?: number;
 }) => {
-  const CARD_OFFSET = offset || 10;
-  const SCALE_FACTOR = scaleFactor || 0.06;
+  const CARD_OFFSET = offset ?? 10;
+  const SCALE_FACTOR = scaleFactor ?? 0.06;
   const [cards, setCards] = useState<Card[]>(items);
 
   useEffect(() => {
