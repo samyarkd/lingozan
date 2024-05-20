@@ -43,7 +43,7 @@ export function PhraseInput() {
       }
     }
 
-    runAnimations();
+    void runAnimations();
   }, []);
 
   return (

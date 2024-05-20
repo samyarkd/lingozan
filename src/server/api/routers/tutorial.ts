@@ -69,7 +69,7 @@ export const tutorialRouter = createTRPCRouter({
       const existingTutorial = await ctx.db
         .select(ctx.db.Tutorial, (tutorial) => {
           return {
-            phrase: true,
+            id: true,
             filter_single: ctx.db.op(tutorial.phrase, "=", prompt),
           };
         })
