@@ -34,6 +34,8 @@ result in a json format= {quiz}
 
 give them a score at the end, don't act like as if it's a chat or an ongoing conversation. just a bare result.
 
+only use markdown to make the text more redable, only markdown.
+
 import follow this format:
 {format_instructions}
 do not return anything else other than the requested json code
