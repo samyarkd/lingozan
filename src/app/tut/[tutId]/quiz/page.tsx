@@ -8,3 +8,4 @@ const page = async ({ params }: { params: { tutId: string } }) => {
 };
 
 export default page;
+export const maxDuration = 60;

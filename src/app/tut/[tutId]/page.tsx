@@ -18,3 +18,5 @@ const TutorialPage = async ({ params }: { params: { tutId: string } }) => {
 };
 
 export default TutorialPage;
+
+export const maxDuration = 60;

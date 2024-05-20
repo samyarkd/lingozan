@@ -49,3 +49,4 @@ const ReviewAnswers = ({
 };
 
 export default ReviewAnswers;
+export const maxDuration = 60;
