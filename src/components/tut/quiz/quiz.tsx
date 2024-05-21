@@ -245,7 +245,7 @@ const FinishCard = ({
   return (
     <div className="flex flex-col gap-2">
       <Card className="w-full shadow-md">
-        <CardHeader>Well-done 🎉 now let&#39s review your answers</CardHeader>
+        <CardHeader>Well-done 🎉 now let&#39;s review your answers</CardHeader>
       </Card>
       <Link href="review">
         {postAnswers.isSuccess && (
