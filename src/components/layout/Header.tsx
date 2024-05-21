@@ -33,7 +33,12 @@ const Header = async () => {
           </Avatar>
         </div>
       ) : (
-        <Link href={auth.getBuiltinUISignUpUrl()}>Not signed In</Link>
+        <Link
+          className="bg-primary text-white px-2 rounded-md py-1"
+          href={auth.getBuiltinUISignUpUrl()}
+        >
+          Sign In/Up
+        </Link>
       )}
     </div>
   );

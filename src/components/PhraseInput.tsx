@@ -1,5 +1,6 @@
 "use client";
 import { animate } from "framer-motion";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
@@ -13,7 +14,13 @@ const phrases = [
   "Hallo, mein Name ist Lingozan.",
 ];
 
-export function PhraseInput() {
+export function PhraseInput({
+  userSigedIn,
+  signInUrl,
+}: {
+  userSigedIn: boolean;
+  signInUrl: string;
+}) {
   const [placeholder, setPlaceholder] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const createTutorial = api.tutorial.create.useMutation();
@@ -55,23 +62,35 @@ export function PhraseInput() {
         placeholder={placeholder}
         onChange={(e) => setValue(e.target.value)}
       />
-      <Button
-        className="shadow-md lg:text-2xl md:text-xl sm:text-lg md:py-6"
-        size="lg"
-        isLoading={createTutorial.isLoading}
-        disabled={createTutorial.isLoading}
-        onClick={async () => {
-          if (value) {
-            const res = await createTutorial.mutateAsync({
-              prompt: value,
-            });
 
-            router.push(`/tut/${res.id}`);
-          }
-        }}
-      >
-        Generate Tutorial
-      </Button>
+      {userSigedIn ? (
+        <Button
+          className="shadow-md lg:text-2xl md:text-xl sm:text-lg md:py-6"
+          size="lg"
+          isLoading={createTutorial.isLoading}
+          disabled={createTutorial.isLoading || !userSigedIn}
+          onClick={async () => {
+            if (value) {
+              const res = await createTutorial.mutateAsync({
+                prompt: value,
+              });
+
+              router.push(`/tut/${res.id}`);
+            }
+          }}
+        >
+          Generate Tutorial
+        </Button>
+      ) : (
+        <Link href={signInUrl} className="w-full">
+          <Button
+            className="shadow-md w-full lg:text-2xl md:text-xl sm:text-lg md:py-6"
+            size="lg"
+          >
+            Sign In to Get Started
+          </Button>
+        </Link>
+      )}
     </div>
   );
 }
